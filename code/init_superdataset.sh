@@ -46,6 +46,24 @@ datalad create-sibling-gin \
 
 datalad push -d ${raw_dataset_dir} --to gin
 
+# Push fMRIPrep derivatives subdataset to G-Node GIN
+datalad create-sibling-gin \
+    --access-protocol ssh \
+    --dataset ${superdataset_dir}/outputs/fmriprep \
+    --credential GIN \
+    ME-ICA/${dataset_id}_fmriprep
+
+datalad push -d ${superdataset_dir}/outputs/fmriprep --to gin
+
+# Push AFNI derivatives subdataset to G-Node GIN
+datalad create-sibling-gin \
+    --access-protocol ssh \
+    --dataset ${superdataset_dir}/outputs/afni \
+    --credential GIN \
+    ME-ICA/${dataset_id}_afni
+
+datalad push -d ${superdataset_dir}/outputs/afni --to gin
+
 # Push superdataset to G-Node GIN
 datalad create-sibling-gin \
     --access-protocol ssh \
