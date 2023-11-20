@@ -15,8 +15,7 @@ subject=$( sed -n -E "$((${SGE_TASK_ID} + 1))s/sub-(\S*)\>.*/\1/gp" ${BIDS_DIR}/
 cmd="singularity run --home $HOME --cleanenv \
     -B $BIDS_DIR:/data \
     /cbica/home/salot/datasets/mobile-phenomics/singularity/afni-23_1_10.simg \
-    afni_proc.py \
-    ..."
+    base_afni_proc_script.sh"
 
 echo Running task ${SGE_TASK_ID}
 echo Commandline: $cmd
