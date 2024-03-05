@@ -22,7 +22,7 @@ cd $rootdir
 # Runs AFNI proc in native space
 # The pre-processed runs to input into tedana are called pb03.${sbjID}.r01.e0?.volreg+orig.HEAD
 afni_proc.py -subj_id ${sbjID} \
-    -blocks despike tshift align volreg mask combine tlrc \
+    -blocks despike tshift align tlrc volreg mask combine regress \
     -dsets_me_run \
         ./func/${sbjID}_${ses}_task-${task}_echo-1_bold.nii.gz \
         ./func/${sbjID}_${ses}_task-${task}_echo-2_bold.nii.gz \
@@ -36,18 +36,6 @@ afni_proc.py -subj_id ${sbjID} \
     -mask_epi_anat yes \
     -align_unifize_epi local \
     -volreg_align_e2a \
+    -volreg_tlrc_warp \
     -tcat_remove_first_trs $remove_first_trs \
     -execute
-
-# The above afni_proc calculates an alignment to template space, but doesn't use it
-# The following will apply the transform to write out the echo data in template space
-# The new files are called pb03a.${sbjID}.r01.e01.volreg+tlrc.HEAD (lousy naming, acknowledged)
-cd ${rootdir}/${sbjID}.results
-echo_list=(01 02 03 04)
-for eind in ${echo_list[@]}; do
-    3dAllineate -base ../$template \
-        -input pb03.${sbjID}.r01.e${eind}.volreg+orig.HEAD \
-        -1Dmatrix_apply warp.anat.Xat.1D \
-        -mast_dxyz 3.5 \
-        -prefix pb03a.${sbjID}.r01.e${eind}.volreg+tlrc.HEAD
-done

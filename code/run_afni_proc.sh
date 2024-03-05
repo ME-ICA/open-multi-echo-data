@@ -34,24 +34,7 @@ cd $rootdir
 cmd="singularity run --home $HOME --cleanenv \
     -B $BIDS_DIR:/data \
     /cbica/home/salot/datasets/mobile-phenomics/singularity/afni-23_1_10.simg \
-    afni_proc.py \
-    -subj_id ${sbjID} \
-    -blocks despike tshift align tlrc volreg mask combine regress \
-    -dsets_me_run  ./func/${sbjID}_${ses}_task-${task}_echo-1_bold.nii.gz \
-        ./func/${sbjID}_${ses}_task-${task}_echo-2_bold.nii.gz \
-        ./func/${sbjID}_${ses}_task-${task}_echo-3_bold.nii.gz \
-        ./func/${sbjID}_${ses}_task-${task}_echo-4_bold.nii.gz \
-    -tlrc_base $template \
-    -echo_times $echo_times \
-    -reg_echo 2 \
-    -copy_anat $anat \
-    -anat_has_skull yes \
-    -mask_epi_anat yes \
-    -align_unifize_epi local \
-    -volreg_align_e2a \
-    -volreg_tlrc_warp \
-    -tcat_remove_first_trs $remove_first_trs \
-    -execute"
+    base_afni_proc_script.sh"
 
 echo Running task ${SGE_TASK_ID}
 echo Commandline: $cmd
