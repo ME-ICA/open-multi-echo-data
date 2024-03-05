@@ -36,7 +36,7 @@ cmd="singularity run --home $HOME --cleanenv \
     /cbica/home/salot/datasets/mobile-phenomics/singularity/afni-23_1_10.simg \
     afni_proc.py \
     -subj_id ${sbjID} \
-    -blocks despike tshift align volreg mask combine tlrc \
+    -blocks despike tshift align tlrc volreg mask combine regress \
     -dsets_me_run  ./func/${sbjID}_${ses}_task-${task}_echo-1_bold.nii.gz \
         ./func/${sbjID}_${ses}_task-${task}_echo-2_bold.nii.gz \
         ./func/${sbjID}_${ses}_task-${task}_echo-3_bold.nii.gz \
@@ -49,6 +49,7 @@ cmd="singularity run --home $HOME --cleanenv \
     -mask_epi_anat yes \
     -align_unifize_epi local \
     -volreg_align_e2a \
+    -volreg_tlrc_warp \
     -tcat_remove_first_trs $remove_first_trs \
     -execute"
 
