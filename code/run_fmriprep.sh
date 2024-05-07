@@ -12,7 +12,7 @@
 PROJECT_DIR=/cbica/home/salot/open-multi-echo-data
 BIDS_DIR=${PROJECT_DIR}/datasets/ds002156/inputs/data
 OUT_DIR=${PROJECT_DIR}/datasets/ds002156/outputs/fmriprep
-LICENSE=/cbica/home/salot/datasets/mobile-phenomics/freesurfer_license.txt
+LICENSE=${PROJECT_DIR}/credentials/freesurfer_license.txt
 
 mkdir -p ${PROJECT_DIR}/work/ds002156-fmriprep
 
@@ -47,5 +47,5 @@ echo Running task ${SGE_TASK_ID}
 echo Commandline: $cmd
 datalad run -d $OUT_DIR -m "Run fMRIPrep on ds002156 ${subject}." $cmd
 
-# Remove any downloaded data in the BIDS dataset
-datalad drop -d $BIDS_DIR ${BIDS_DIR}/sub-${subject}
+# Remove any downloaded data in the BIDS dataset to minimize disk usage
+datalad drop -d $BIDS_DIR --what filecontent ${BIDS_DIR}/sub-${subject}
