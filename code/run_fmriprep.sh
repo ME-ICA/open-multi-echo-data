@@ -48,4 +48,4 @@ echo Commandline: $cmd
 datalad run -d $OUT_DIR -m "Run fMRIPrep on ds002156 ${subject}." $cmd
 
 # Remove any downloaded data in the BIDS dataset to minimize disk usage
-datalad drop -d $BIDS_DIR --what filecontent ${BIDS_DIR}/sub-${subject}
+datalad drop -d $BIDS_DIR --nocheck --if-dirty ignore ${BIDS_DIR}/sub-${subject}
