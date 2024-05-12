@@ -12,12 +12,15 @@
 PROJECT_DIR=/cbica/home/salot/open-multi-echo-data
 BIDS_DIR=${PROJECT_DIR}/datasets/ds002156/inputs/data
 OUT_DIR=${PROJECT_DIR}/datasets/ds002156/outputs/fmriprep
-LICENSE=/cbica/home/salot/datasets/mobile-phenomics/freesurfer_license.txt
+LICENSE=${PROJECT_DIR}/credentials/freesurfer_license.txt
 
 mkdir -p ${PROJECT_DIR}/work/ds002156-fmriprep
 
 # Extract the subject ID from the participants.tsv file.
 subject=$( sed -n -E "$((${SGE_TASK_ID} + 1))s/sub-(\S*)\>.*/\1/gp" ${BIDS_DIR}/participants.tsv )
+
+# Download the subject's data
+datalad get -d ${BIDS_DIR} ${BIDS_DIR}/sub-${subject}
 
 cmd="singularity run --home $HOME --cleanenv \
     -B $PROJECT_DIR:/data \
@@ -43,3 +46,6 @@ cmd="singularity run --home $HOME --cleanenv \
 echo Running task ${SGE_TASK_ID}
 echo Commandline: $cmd
 datalad run -d $OUT_DIR -m "Run fMRIPrep on ds002156 ${subject}." $cmd
+
+# Remove any downloaded data in the BIDS dataset to minimize disk usage
+datalad drop -d $BIDS_DIR --what filecontent ${BIDS_DIR}/sub-${subject}
