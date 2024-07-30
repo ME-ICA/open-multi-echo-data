@@ -4,6 +4,7 @@ about: New dataset to process?
 title: ''
 labels: ['datasets', 'afni', 'fmriprep']
 assignees: ''
+projects: ['ME-ICA/5']
 
 ---
 ## Location
