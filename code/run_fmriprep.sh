@@ -1,37 +1,51 @@
 #!/bin/bash
 #$ -pe threaded 1
-#$ -l h_vmem=32G
+#$ -l h_vmem=64G
 #$ -l h_rt=240:00:00
 #$ -cwd
 #$ -N fmriprep
-#$ -e /cbica/home/salot/datasets/${dataset_id}/code/logs
-#$ -o /cbica/home/salot/datasets/${dataset_id}/code/logs
+#$ -e /cbica/home/salot/open-multi-echo-data/datasets/ds002156/code/logs
+#$ -o /cbica/home/salot/open-multi-echo-data/datasets/ds002156/code/logs
 
-BIDS_DIR=/cbica/home/salot/datasets/${dataset_id}/dset
+# Submit with the following:
+# qsub -t 1 -tc 1 run_fmriprep.sh
+PROJECT_DIR=/cbica/home/salot/open-multi-echo-data
+BIDS_DIR=${PROJECT_DIR}/datasets/ds002156/inputs/data
+OUT_DIR=${PROJECT_DIR}/datasets/ds002156/outputs/fmriprep
+LICENSE=${PROJECT_DIR}/credentials/freesurfer_license.txt
+
+mkdir -p ${PROJECT_DIR}/work/ds002156-fmriprep
 
 # Extract the subject ID from the participants.tsv file.
 subject=$( sed -n -E "$((${SGE_TASK_ID} + 1))s/sub-(\S*)\>.*/\1/gp" ${BIDS_DIR}/participants.tsv )
 
+# Download the subject's data
+datalad get -d ${BIDS_DIR} ${BIDS_DIR}/sub-${subject}
+
 cmd="singularity run --home $HOME --cleanenv \
-    -B $BIDS_DIR:/data \
-    /cbica/home/salot/datasets/mobile-phenomics/singularity/fmriprep-23_1_5dev.simg \
-    /data \
-    /data/derivatives/fmriprep \
+    -B $PROJECT_DIR:/data \
+    -B $LICENSE:/license.txt \
+    /cbica/home/salot/open-multi-echo-data/singularity/fmriprep-23_2_1.simg \
+    /data/datasets/ds002156/inputs/data \
+    /data/datasets/ds002156/outputs/fmriprep \
     participant \
     --participant-label $subject \
-    -w /cbica/home/salot/datasets/mobile-phenomics/work \
+    --bids-filter-file /data/datasets/ds002156/code/bids_filter.json \
+    -w /data/work/ds002156-fmriprep \
     --nprocs 1 \
     --omp-nthreads 1 \
-    --output-spaces func T1w MNI152NLin6Asym \
+    --level resampling \
+    --output-spaces func T1w MNI152NLin6Asym:res-2 \
     --me-t2s-fit-method curvefit \
     --output-layout bids \
     --me-output-echos \
     --project-goodvoxels \
     --cifti-output \
-    --bids-filter-file /cbica/home/salot/datasets/mobile-phenomics/code/bids_filter.json \
-    --fs-license-file /cbica/home/salot/datasets/mobile-phenomics/freesurfer_license.txt \
-    --skip_bids_validation"
+    --fs-license-file /license.txt"
 
 echo Running task ${SGE_TASK_ID}
 echo Commandline: $cmd
-datalad run -m "Run fMRIPrep on ${dataset_id} ${subject}." $cmd
+datalad run -d $OUT_DIR -m "Run fMRIPrep on ds002156 ${subject}." $cmd
+
+# Remove any downloaded data in the BIDS dataset to minimize disk usage
+datalad drop -d $BIDS_DIR --nocheck --if-dirty ignore ${BIDS_DIR}/sub-${subject}

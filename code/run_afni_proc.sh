@@ -31,7 +31,7 @@ cd $rootdir
 
 # Runs AFNI proc in native space
 # The pre-processed runs to input into tedana are called pb03.${sbjID}.r01.e0?.volreg+orig.HEAD
-cmd="singularity run --home $HOME --cleanenv \
+cmd="apptainer run --home $HOME --cleanenv \
     -B $BIDS_DIR:/data \
     /cbica/home/salot/datasets/mobile-phenomics/singularity/afni-23_1_10.simg \
     base_afni_proc_script.sh"
