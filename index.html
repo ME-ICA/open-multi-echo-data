@@ -5,10 +5,9 @@
 layout: home
 ---
 
-{% assign dataset_posts = site.posts | where: "category", "dataset" %}
 {% assign unique_echoes = "" | split: "" %}
 
-{% for post in dataset_posts %}
+{% for post in site.categories.dataset %}
   {% assign unique_echoes = unique_echoes | concat: post.echoes %}
 {% endfor %}
 
@@ -30,7 +29,11 @@ layout: home
         <td>{{ post.title }}</td>
         <td>{{ post.scanner }}</td>
         {% for echo in unique_echoes %}
-          <td>{% if echo in post.echoes %}X{% endif %}</td>
+          <td>
+            {% if echo in post.echoes %}
+            X
+            {% endif %}
+          </td>
         {% endfor %}
       </tr>
     {% endfor %}
