@@ -39,6 +39,7 @@ layout: default
     </tbody>
 </table>
 
+<strong>
 <p>Raw Dataset: <a href="{{ page.website }}">{{ page.website }}</a></p>
 {% if page.fmriprep %}
     <p>fMRIPrep derivatives: <a href="{{ page.fmriprep }}">{{ page.fmriprep }}</a></p>
@@ -46,6 +47,8 @@ layout: default
 {% if page.afni %}
     <p>AFNI derivatives: <a href="{{ page.afni }}">{{ page.afni }}</a></p>
 {% endif %}
-<br/>
+</strong>
+
+<hr/>
 
 {{content}}
