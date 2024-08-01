@@ -1,0 +1,38 @@
+---
+# Feel free to add content and custom Front Matter to this file.
+# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+
+layout: home
+---
+
+{% assign dataset_posts = site.posts | where: "category", "dataset" %}
+{% assign unique_echoes = "" | split: "" %}
+
+{% for post in dataset_posts %}
+  {% assign unique_echoes = unique_echoes | concat: post.echoes %}
+{% endfor %}
+
+{% assign unique_echoes = unique_echoes | uniq %}
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Scanner</th>
+      {% for echo in unique_echoes %}
+        <th>{{ echo }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for post in dataset_posts %}
+      <tr>
+        <td>{{ post.title }}</td>
+        <td>{{ post.scanner }}</td>
+        {% for echo in unique_echoes %}
+          <td>{% if echo in post.echoes %}X{% endif %}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
