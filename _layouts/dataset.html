@@ -14,32 +14,30 @@ layout: default
       </tr>
     </thead>
     <tbody>
-      {% for post in site.categories.dataset %}
-        <tr>
-          <td><a href="{{ post.website }}">Link</a></td>
-          <td>{{ post.scanner }}</td>
-          <td>{{ post.echoes | join: ", " }}</td>
-          <td>
+    <tr>
+        <td><a href="{{ page.website }}">Link</a></td>
+        <td>{{ page.scanner }}</td>
+        <td>{{ page.echoes | join: ", " }}</td>
+        <td>
             <ul>
-                {% for extra in post.extras %}
-                  <li>
-                    {% if extra == "asl" %}
-                      Concurrent ASL
-                    {% elsif extra == "complex" %}
-                      Complex-valued BOLD
-                    {% elsif extra == "norf" %}
-                      Noise scans
-                    {% elsif extra == "physio" %}
-                      Concurrent physiological monitoring
-                    {% elsif extra == "single-echo" %}
-                      Comparison single-echo BOLD
-                    {% endif %}
-                  </li>
+                {% for extra in page.extras %}
+                    <li>
+                        {% if extra == "asl" %}
+                            Concurrent ASL
+                        {% elsif extra == "complex" %}
+                            Complex-valued BOLD
+                        {% elsif extra == "norf" %}
+                            Noise scans
+                        {% elsif extra == "physio" %}
+                            Concurrent physiological monitoring
+                        {% elsif extra == "single-echo" %}
+                            Comparison single-echo BOLD
+                        {% endif %}
+                    </li>
                 {% endfor %}
-              </ul>
-          </td>
-        </tr>
-      {% endfor %}
+            </ul>
+        </td>
+    </tr>
     </tbody>
   </table>
 
