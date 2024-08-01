@@ -41,8 +41,8 @@ layout: home
     {% for post in site.categories.dataset %}
       <tr>
         <td style="max-width: 300px;"><a href="{{ post.url }}">{{ post.title }}</a></td>
-        <td><a href="{{ post.website }}">Dataset</a></td>
-        <td>{{ post.scanner }}</td>
+        <td style="text-align: center;"><a href="{{ post.website }}">Dataset</a></td>
+        <td style="text-align: center;">{{ post.scanner }}</td>
         {% for echo in echoes %}
           <td style="text-align: center;">
             {% if post.echoes contains echo %}
@@ -51,7 +51,7 @@ layout: home
           </td>
         {% endfor %}
         {% for extra in extras %}
-          <td>
+          <td style="text-align: center;">
             {% if post.extras contains extra %}
               X
             {% endif %}
