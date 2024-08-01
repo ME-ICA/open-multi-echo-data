@@ -23,7 +23,7 @@ email: salot@pennmedicine.upenn.edu
 description: >- # this means to ignore newlines until "baseurl:"
   A summary of available open multi-echo fMRI datasets
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://me-ica.github.io/open-multi-echo-data/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  jekyll
 
