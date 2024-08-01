@@ -33,7 +33,7 @@ layout: home
         <th>{{ echo }}</th>
       {% endfor %}
       {% for extra in extras %}
-        <th></th>
+        <th>{{ extra }}</th>
       {% endfor %}
     </tr>
   </thead>
@@ -44,7 +44,7 @@ layout: home
         <td><a href="{{ post.website }}">Dataset</a></td>
         <td>{{ post.scanner }}</td>
         {% for echo in echoes %}
-          <td>
+          <td style="text-align: center;">
             {% if post.echoes contains echo %}
               X
             {% endif %}
