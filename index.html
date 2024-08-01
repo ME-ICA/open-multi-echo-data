@@ -24,6 +24,7 @@ layout: home
       <th>Scanner</th>
       <th colspan="{{ echoes.size }}">Number of Echoes</th>
       <th colspan="{{ extras.size }}">Extra Features</th>
+      <th colspan=2>Derivatives</th>
     </tr>
     <tr>
       <th style="max-width: 300px;"></th>
@@ -35,6 +36,8 @@ layout: home
       {% for extra in extras %}
         <th>{{ extra }}</th>
       {% endfor %}
+      <th>fMRIPrep</th>
+      <th>AFNI</th>
     </tr>
   </thead>
   <tbody>
@@ -57,6 +60,16 @@ layout: home
             {% endif %}
           </td>
         {% endfor %}
+        <td style="text-align: center;">
+          {% if post.fmriprep %}
+            X
+          {% endif %}
+        </td>
+        <td style="text-align: center;">
+          {% if post.afni %}
+            X
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
   </tbody>
