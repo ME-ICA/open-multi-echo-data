@@ -1,0 +1,46 @@
+---
+layout: default
+---
+
+<h1>{{ page.title }}</h1>
+
+<table>
+    <thead>
+      <tr>
+        <th>Website</th>
+        <th>Magnetic Field Strength</th>
+        <th>Number(s) of Echoes</th>
+        <th>Extras</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in site.categories.dataset %}
+        <tr>
+          <td><a href="{{ post.website }}">Link</a></td>
+          <td>{{ post.scanner }}</td>
+          <td>{{ post.echoes | join: ", " }}</td>
+          <td>
+            <ul>
+                {% for extra in post.extras %}
+                  <li>
+                    {% if extra == "asl" %}
+                      Concurrent ASL
+                    {% elsif extra == "complex" %}
+                      Complex-valued BOLD
+                    {% elsif extra == "norf" %}
+                      Noise scans
+                    {% elsif extra == "physio" %}
+                      Concurrent physiological monitoring
+                    {% elsif extra == "single-echo" %}
+                      Comparison single-echo BOLD
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{{content}}

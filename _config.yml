@@ -19,13 +19,10 @@
 # in the templates via {{ site.myvariable }}.
 
 title: Open Multi-Echo Datasets
-email: salot@pennmedicine.upenn.edu
-description: >- # this means to ignore newlines until "baseurl:"
+description: >-
   A summary of available open multi-echo fMRI datasets
 baseurl: "/open-multi-echo-data" # the subpath of your site, e.g. /blog
 url: "https://me-ica.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
 
 # Build settings
 remote_theme: pages-themes/minimal@v0.2.0
