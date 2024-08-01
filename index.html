@@ -30,8 +30,8 @@ layout: home
         <td>{{ post.scanner }}</td>
         {% for echo in echoes %}
           <td>
-            {% if echo in post.echoes %}
-            X
+            {% if post.echoes contains echo %}
+              X
             {% endif %}
           </td>
         {% endfor %}
