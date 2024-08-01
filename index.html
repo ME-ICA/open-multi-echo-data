@@ -5,20 +5,20 @@
 layout: home
 ---
 
-{% assign unique_echoes = "" | split: "" %}
+{% assign echoes = "" | split: "" %}
 
 {% for post in site.categories.dataset %}
-  {% assign unique_echoes = unique_echoes | concat: post.echoes %}
+  {% assign echoes = echoes | concat: post.echoes %}
 {% endfor %}
 
-{% assign unique_echoes = unique_echoes | uniq %}
+{% assign echoes = echoes | uniq %}
 
 <table>
   <thead>
     <tr>
       <th>Title</th>
       <th>Scanner</th>
-      {% for echo in unique_echoes %}
+      {% for echo in echoes %}
         <th>{{ echo }}</th>
       {% endfor %}
     </tr>
