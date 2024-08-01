@@ -11,7 +11,7 @@ layout: home
   {% assign echoes = echoes | concat: post.echoes %}
 {% endfor %}
 
-{% assign echoes = echoes | uniq %}
+{% assign echoes = echoes | uniq | sort %}
 
 <table>
   <thead>
@@ -24,11 +24,11 @@ layout: home
     </tr>
   </thead>
   <tbody>
-    {% for post in dataset_posts %}
+    {% for post in site.categories.dataset %}
       <tr>
         <td>{{ post.title }}</td>
         <td>{{ post.scanner }}</td>
-        {% for echo in unique_echoes %}
+        {% for echo in echoes %}
           <td>
             {% if echo in post.echoes %}
             X
