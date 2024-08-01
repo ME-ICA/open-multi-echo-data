@@ -22,11 +22,18 @@ layout: home
       <th style="max-width: 300px;">Title</th>
       <th>URL</th>
       <th>Scanner</th>
+      <th colspan="{{ echoes.size }}">Number of Echoes</th>
+      <th colspan="{{ extras.size }}">Extra Features</th>
+    </tr>
+    <tr>
+      <th style="max-width: 300px;"></th>
+      <th></th>
+      <th></th>
       {% for echo in echoes %}
         <th>{{ echo }}</th>
       {% endfor %}
       {% for extra in extras %}
-        <th>{{ extra }}</th>
+        <th></th>
       {% endfor %}
     </tr>
   </thead>
