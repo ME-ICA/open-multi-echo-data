@@ -6,12 +6,13 @@ layout: home
 ---
 
 {% assign echoes = "" | split: "" %}
-
+{% assign extras = "" | split: "" %}
 {% for post in site.categories.dataset %}
   {% assign echoes = echoes | concat: post.echoes %}
+  {% assign extras = extras | concat: post.extras %}
 {% endfor %}
-
 {% assign echoes = echoes | uniq | sort %}
+{% assign extras = extras | uniq | sort %}
 
 <table>
   <thead>
@@ -21,6 +22,9 @@ layout: home
       <th>Scanner</th>
       {% for echo in echoes %}
         <th>{{ echo }}</th>
+      {% endfor %}
+      {% for extra in extras %}
+        <th>{{ extra }}</th>
       {% endfor %}
     </tr>
   </thead>
@@ -33,6 +37,13 @@ layout: home
         {% for echo in echoes %}
           <td>
             {% if post.echoes contains echo %}
+              X
+            {% endif %}
+          </td>
+        {% endfor %}
+        {% for extra in extras %}
+          <td>
+            {% if post.extras contains extra %}
               X
             {% endif %}
           </td>
