@@ -7,6 +7,17 @@ layout: home
 
 <h1> {{ site.title }} </h1>
 
+This collects and describes every open multi-echo fMRI dataset that we know of.
+
+We define "open" as being freely available to the public without registration or a data use agreement.
+This excludes several datasets that are fundamentally open,
+but which have barriers to access that would prevent researchers from directly downloading the data.
+
+We define "multi-echo" as having more than two echoes in the BOLD time series.
+This excludes two-echo datasets, which, though technically "multi-echo", cannot be analyzed with multi-echo methods.
+
+<h2>Datasets</h2>
+
 {% assign echoes = "" | split: "" %}
 {% assign extras = "" | split: "" %}
 {% for post in site.categories.dataset %}
