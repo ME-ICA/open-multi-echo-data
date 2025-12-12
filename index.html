@@ -49,6 +49,13 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
     background-color: #4CAF50;
     color: white;
   }
+  th a {
+    color: #FFD700 !important;
+    text-decoration: underline !important;
+  }
+  th a:hover {
+    color: #FFA500 !important;
+  }
 </style>
 
 <table>
@@ -64,16 +71,16 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
     <tr>
       <th style="max-width: 300px;"></th>
       <th></th>
-      <th><a href="{{ '/scanner-7t.html' | relative_url }}" style="color: white; text-decoration: none;">7T</a></th>
-      <th><a href="{{ '/scanner-3t.html' | relative_url }}" style="color: white; text-decoration: none;">3T</a></th>
+      <th><a href="{{ '/scanner-7t.html' | relative_url }}">7T</a></th>
+      <th><a href="{{ '/scanner-3t.html' | relative_url }}">3T</a></th>
       {% for echo in echoes %}
-        <th><a href="{{ '/echoes-' | append: echo | append: '.html' | relative_url }}" style="color: white; text-decoration: none;">{{ echo }}</a></th>
+        <th><a href="{{ '/echoes-' | append: echo | append: '.html' | relative_url }}">{{ echo }}</a></th>
       {% endfor %}
       {% for extra in extras %}
-        <th><a href="{{ '/extra-' | append: extra | append: '.html' | relative_url }}" style="color: white; text-decoration: none;">{{ extra }}</a></th>
+        <th><a href="{{ '/extra-' | append: extra | append: '.html' | relative_url }}">{{ extra }}</a></th>
       {% endfor %}
-      <th><a href="{{ '/derivatives-fmriprep.html' | relative_url }}" style="color: white; text-decoration: none;">fMRIPrep</a></th>
-      <th><a href="{{ '/derivatives-afni.html' | relative_url }}" style="color: white; text-decoration: none;">AFNI</a></th>
+      <th><a href="{{ '/derivatives-fmriprep.html' | relative_url }}">fMRIPrep</a></th>
+      <th><a href="{{ '/derivatives-afni.html' | relative_url }}">AFNI</a></th>
     </tr>
   </thead>
   <tbody>
