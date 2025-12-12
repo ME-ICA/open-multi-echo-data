@@ -17,7 +17,7 @@ but which have barriers to access that would prevent researchers from directly d
 We define "multi-echo" as having more than two echoes in the BOLD time series.
 This excludes two-echo datasets, which, though technically "multi-echo", cannot be analyzed with multi-echo methods.
 
-<h2>Datasets</h2>
+<h2>Datasets ({{ site.categories.dataset.size }})</h2>
 
 {% assign echoes = "" | split: "" %}
 {% assign extras = "" | split: "" %}
@@ -354,7 +354,8 @@ function clearFilter() {
   // Reset count in heading
   const heading = document.querySelector('h2');
   if (heading) {
-    heading.textContent = 'Datasets';
+    const totalCount = document.querySelectorAll('tbody tr').length;
+    heading.textContent = `Datasets (${totalCount})`;
   }
 }
 </script>
