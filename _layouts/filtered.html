@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: fullwidth
 ---
 
 <h1>{{ page.title }}</h1>
@@ -53,16 +53,9 @@ layout: default
 <h2>Datasets ({{ filtered_posts.size }})</h2>
 
 <style>
-  .table-container {
-    overflow-x: auto;
-    width: 100%;
-    margin: 20px 0;
-  }
   table {
     border-collapse: collapse;
     width: 100%;
-    min-width: 1200px;
-    table-layout: auto;
   }
   th, td {
     border: 1px solid #ddd;
@@ -90,7 +83,6 @@ layout: default
   }
 </style>
 
-<div class="table-container">
 <table>
   <thead>
     <tr>
@@ -159,5 +151,4 @@ layout: default
     {% endfor %}
   </tbody>
 </table>
-</div>
 
