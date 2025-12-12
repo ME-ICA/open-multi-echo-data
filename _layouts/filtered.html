@@ -1,22 +1,10 @@
 ---
-# Feel free to add content and custom Front Matter to this file.
-# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-
-layout: home
+layout: default
 ---
 
-<h1> {{ site.title }} </h1>
+<h1>{{ page.title }}</h1>
 
-This collects and describes every open multi-echo fMRI dataset that we know of.
-
-We define "open" as being freely available to the public without registration or a data use agreement.
-This excludes several datasets that are fundamentally open,
-but which have barriers to access that would prevent researchers from directly downloading the data.
-
-We define "multi-echo" as having more than two echoes in the BOLD time series.
-This excludes two-echo datasets, which, though technically "multi-echo", cannot be analyzed with multi-echo methods.
-
-<h2>Datasets</h2>
+{{ content }}
 
 {% assign echoes = "" | split: "" %}
 {% assign extras = "" | split: "" %}
@@ -26,6 +14,43 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
 {% endfor %}
 {% assign echoes = echoes | uniq | sort %}
 {% assign extras = extras | uniq | sort %}
+
+{% comment %} Filter datasets based on page filter criteria {% endcomment %}
+{% assign filtered_posts = "" | split: "" %}
+{% for post in site.categories.dataset %}
+  {% assign include_post = false %}
+
+  {% comment %} Check scanner filter {% endcomment %}
+  {% if page.filter_scanner and post.scanner == page.filter_scanner %}
+    {% assign include_post = true %}
+  {% endif %}
+
+  {% comment %} Check echoes filter {% endcomment %}
+  {% if page.filter_echo and post.echoes contains page.filter_echo %}
+    {% assign include_post = true %}
+  {% endif %}
+
+  {% comment %} Check extras filter {% endcomment %}
+  {% if page.filter_extra and post.extras contains page.filter_extra %}
+    {% assign include_post = true %}
+  {% endif %}
+
+  {% comment %} Check fmriprep filter {% endcomment %}
+  {% if page.filter_fmriprep and post.fmriprep %}
+    {% assign include_post = true %}
+  {% endif %}
+
+  {% comment %} Check afni filter {% endcomment %}
+  {% if page.filter_afni and post.afni %}
+    {% assign include_post = true %}
+  {% endif %}
+
+  {% if include_post %}
+    {% assign filtered_posts = filtered_posts | push: post %}
+  {% endif %}
+{% endfor %}
+
+<h2>Datasets ({{ filtered_posts.size }})</h2>
 
 <style>
   table {
@@ -77,7 +102,7 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
     </tr>
   </thead>
   <tbody>
-    {% for post in site.categories.dataset %}
+    {% for post in filtered_posts %}
       <tr>
         <td style="max-width: 300px;"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></td>
         <td style="text-align: center;"><a href="{{ post.website }}">Dataset</a></td>
@@ -119,3 +144,4 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
     {% endfor %}
   </tbody>
 </table>
+
