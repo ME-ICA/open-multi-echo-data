@@ -53,10 +53,43 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
     color: #FFD700 !important;
     text-decoration: underline !important;
   }
+  th a {
+    color: #FFD700 !important;
+    text-decoration: underline !important;
+    cursor: pointer;
+  }
   th a:hover {
     color: #FFA500 !important;
   }
+  th a.active-filter {
+    background-color: rgba(255, 215, 0, 0.3);
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+  .filter-info {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+  }
+  .filter-info button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .filter-info button:hover {
+    background-color: #45a049;
+  }
 </style>
+
+<div class="filter-info" id="filterInfo" style="display: none;">
+  <span>Filtered by: <strong id="filterText"></strong></span>
+  <button onclick="clearFilter()">Show All</button>
+</div>
 
 <table>
   <thead>
@@ -71,21 +104,25 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
     <tr>
       <th style="max-width: 300px;"></th>
       <th></th>
-      <th><a href="{{ '/scanner-7t.html' | relative_url }}">7T</a></th>
-      <th><a href="{{ '/scanner-3t.html' | relative_url }}">3T</a></th>
+      <th><a href="#" onclick="filterTable('scanner', '7T'); return false;" data-filter-type="scanner" data-filter-value="7T">7T</a></th>
+      <th><a href="#" onclick="filterTable('scanner', '3T'); return false;" data-filter-type="scanner" data-filter-value="3T">3T</a></th>
       {% for echo in echoes %}
-        <th><a href="{{ '/echoes-' | append: echo | append: '.html' | relative_url }}">{{ echo }}</a></th>
+        <th><a href="#" onclick="filterTable('echo', '{{ echo }}'); return false;" data-filter-type="echo" data-filter-value="{{ echo }}">{{ echo }}</a></th>
       {% endfor %}
       {% for extra in extras %}
-        <th><a href="{{ '/extra-' | append: extra | append: '.html' | relative_url }}">{{ extra }}</a></th>
+        <th><a href="#" onclick="filterTable('extra', '{{ extra }}'); return false;" data-filter-type="extra" data-filter-value="{{ extra }}">{{ extra }}</a></th>
       {% endfor %}
-      <th><a href="{{ '/derivatives-fmriprep.html' | relative_url }}">fMRIPrep</a></th>
-      <th><a href="{{ '/derivatives-afni.html' | relative_url }}">AFNI</a></th>
+      <th><a href="#" onclick="filterTable('derivative', 'fmriprep'); return false;" data-filter-type="derivative" data-filter-value="fmriprep">fMRIPrep</a></th>
+      <th><a href="#" onclick="filterTable('derivative', 'afni'); return false;" data-filter-type="derivative" data-filter-value="afni">AFNI</a></th>
     </tr>
   </thead>
   <tbody>
     {% for post in site.categories.dataset %}
-      <tr>
+      <tr data-scanner="{{ post.scanner }}"
+          data-echoes="{{ post.echoes | join: ',' }}"
+          data-extras="{{ post.extras | join: ',' }}"
+          data-fmriprep="{% if post.fmriprep %}true{% else %}false{% endif %}"
+          data-afni="{% if post.afni %}true{% else %}false{% endif %}">
         <td style="max-width: 300px;"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></td>
         <td style="text-align: center;"><a href="{{ post.website }}">Dataset</a></td>
         <td style="text-align: center;">
@@ -126,3 +163,112 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
     {% endfor %}
   </tbody>
 </table>
+
+<script>
+let currentFilter = null;
+
+function filterTable(type, value) {
+  const rows = document.querySelectorAll('tbody tr');
+  const filterInfo = document.getElementById('filterInfo');
+  const filterText = document.getElementById('filterText');
+
+  // Remove active class from all filter links
+  document.querySelectorAll('th a').forEach(link => {
+    link.classList.remove('active-filter');
+  });
+
+  // If clicking the same filter, clear it
+  if (currentFilter && currentFilter.type === type && currentFilter.value === value) {
+    clearFilter();
+    return;
+  }
+
+  // Set current filter
+  currentFilter = { type, value };
+
+  // Add active class to clicked link
+  const clickedLink = document.querySelector(`th a[data-filter-type="${type}"][data-filter-value="${value}"]`);
+  if (clickedLink) {
+    clickedLink.classList.add('active-filter');
+  }
+
+  // Filter rows
+  let visibleCount = 0;
+  rows.forEach(row => {
+    let show = false;
+
+    if (type === 'scanner') {
+      show = row.getAttribute('data-scanner') === value;
+    } else if (type === 'echo') {
+      const echoes = row.getAttribute('data-echoes').split(',');
+      show = echoes.includes(value.toString());
+    } else if (type === 'extra') {
+      const extras = row.getAttribute('data-extras').split(',');
+      show = extras.includes(value);
+    } else if (type === 'derivative') {
+      if (value === 'fmriprep') {
+        show = row.getAttribute('data-fmriprep') === 'true';
+      } else if (value === 'afni') {
+        show = row.getAttribute('data-afni') === 'true';
+      }
+    }
+
+    if (show) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  // Update filter info
+  let displayText = '';
+  if (type === 'scanner') {
+    displayText = `Scanner: ${value}`;
+  } else if (type === 'echo') {
+    displayText = `Number of Echoes: ${value}`;
+  } else if (type === 'extra') {
+    const extraNames = {
+      'asl': 'ASL',
+      'complex': 'Complex',
+      'norf': 'NORF',
+      'physio': 'Physiological Monitoring',
+      'single-echo': 'Single-Echo'
+    };
+    displayText = `Extra Features: ${extraNames[value] || value}`;
+  } else if (type === 'derivative') {
+    displayText = `Derivatives: ${value === 'fmriprep' ? 'fMRIPrep' : 'AFNI'}`;
+  }
+
+  filterText.textContent = displayText;
+  filterInfo.style.display = 'block';
+
+  // Update count in heading
+  const heading = document.querySelector('h2');
+  if (heading) {
+    heading.textContent = `Datasets (${visibleCount})`;
+  }
+}
+
+function clearFilter() {
+  const rows = document.querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    row.style.display = '';
+  });
+
+  // Remove active class from all filter links
+  document.querySelectorAll('th a').forEach(link => {
+    link.classList.remove('active-filter');
+  });
+
+  // Hide filter info
+  document.getElementById('filterInfo').style.display = 'none';
+  currentFilter = null;
+
+  // Reset count in heading
+  const heading = document.querySelector('h2');
+  if (heading) {
+    heading.textContent = 'Datasets';
+  }
+}
+</script>
