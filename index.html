@@ -3,6 +3,7 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: home
+title: Open Multi-Echo Datasets
 ---
 
 <h1> {{ site.title }} </h1>
@@ -84,10 +85,28 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
   .filter-info button:hover {
     background-color: #45a049;
   }
+  .filter-tag {
+    display: inline-block;
+    margin: 2px 5px;
+    padding: 3px 8px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  .filter-tag .remove {
+    margin-left: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .filter-tag .remove:hover {
+    opacity: 0.7;
+  }
 </style>
 
 <div class="filter-info" id="filterInfo" style="display: none;">
-  <span>Filtered by: <strong id="filterText"></strong></span>
+  <span>Active filters: </span>
+  <span id="filterTags"></span>
   <button onclick="clearFilter()">Show All</button>
 </div>
 
@@ -165,51 +184,96 @@ This excludes two-echo datasets, which, though technically "multi-echo", cannot 
 </table>
 
 <script>
-let currentFilter = null;
+let activeFilters = {};
 
 function filterTable(type, value) {
+  const filterKey = `${type}:${value}`;
+
+  // If clicking the same filter, toggle it off
+  if (activeFilters[filterKey]) {
+    delete activeFilters[filterKey];
+    const clickedLink = document.querySelector(`th a[data-filter-type="${type}"][data-filter-value="${value}"]`);
+    if (clickedLink) {
+      clickedLink.classList.remove('active-filter');
+    }
+  } else {
+    // For mutually exclusive types, remove other filters of the same type
+    if (type === 'scanner') {
+      // Remove all other scanner filters
+      Object.keys(activeFilters).forEach(key => {
+        if (key.startsWith('scanner:')) {
+          const [oldType, oldValue] = key.split(':');
+          const oldLink = document.querySelector(`th a[data-filter-type="${oldType}"][data-filter-value="${oldValue}"]`);
+          if (oldLink) {
+            oldLink.classList.remove('active-filter');
+          }
+          delete activeFilters[key];
+        }
+      });
+    } else if (type === 'echo') {
+      // Remove all other echo filters
+      Object.keys(activeFilters).forEach(key => {
+        if (key.startsWith('echo:')) {
+          const [oldType, oldValue] = key.split(':');
+          const oldLink = document.querySelector(`th a[data-filter-type="${oldType}"][data-filter-value="${oldValue}"]`);
+          if (oldLink) {
+            oldLink.classList.remove('active-filter');
+          }
+          delete activeFilters[key];
+        }
+      });
+    }
+
+    // Add the new filter
+    activeFilters[filterKey] = { type, value };
+    const clickedLink = document.querySelector(`th a[data-filter-type="${type}"][data-filter-value="${value}"]`);
+    if (clickedLink) {
+      clickedLink.classList.add('active-filter');
+    }
+  }
+
+  // Apply all filters
+  applyFilters();
+}
+
+function applyFilters() {
   const rows = document.querySelectorAll('tbody tr');
   const filterInfo = document.getElementById('filterInfo');
-  const filterText = document.getElementById('filterText');
+  const filterTags = document.getElementById('filterTags');
 
-  // Remove active class from all filter links
-  document.querySelectorAll('th a').forEach(link => {
-    link.classList.remove('active-filter');
-  });
-
-  // If clicking the same filter, clear it
-  if (currentFilter && currentFilter.type === type && currentFilter.value === value) {
+  if (Object.keys(activeFilters).length === 0) {
     clearFilter();
     return;
   }
 
-  // Set current filter
-  currentFilter = { type, value };
-
-  // Add active class to clicked link
-  const clickedLink = document.querySelector(`th a[data-filter-type="${type}"][data-filter-value="${value}"]`);
-  if (clickedLink) {
-    clickedLink.classList.add('active-filter');
-  }
-
-  // Filter rows
   let visibleCount = 0;
   rows.forEach(row => {
-    let show = false;
+    let show = true;
 
-    if (type === 'scanner') {
-      show = row.getAttribute('data-scanner') === value;
-    } else if (type === 'echo') {
-      const echoes = row.getAttribute('data-echoes').split(',');
-      show = echoes.includes(value.toString());
-    } else if (type === 'extra') {
-      const extras = row.getAttribute('data-extras').split(',');
-      show = extras.includes(value);
-    } else if (type === 'derivative') {
-      if (value === 'fmriprep') {
-        show = row.getAttribute('data-fmriprep') === 'true';
-      } else if (value === 'afni') {
-        show = row.getAttribute('data-afni') === 'true';
+    // Check all active filters - all must match (AND logic)
+    for (const filterKey in activeFilters) {
+      const { type, value } = activeFilters[filterKey];
+      let matches = false;
+
+      if (type === 'scanner') {
+        matches = row.getAttribute('data-scanner') === value;
+      } else if (type === 'echo') {
+        const echoes = row.getAttribute('data-echoes').split(',');
+        matches = echoes.includes(value.toString());
+      } else if (type === 'extra') {
+        const extras = row.getAttribute('data-extras').split(',');
+        matches = extras.includes(value);
+      } else if (type === 'derivative') {
+        if (value === 'fmriprep') {
+          matches = row.getAttribute('data-fmriprep') === 'true';
+        } else if (value === 'afni') {
+          matches = row.getAttribute('data-afni') === 'true';
+        }
+      }
+
+      if (!matches) {
+        show = false;
+        break;
       }
     }
 
@@ -221,26 +285,36 @@ function filterTable(type, value) {
     }
   });
 
-  // Update filter info
-  let displayText = '';
-  if (type === 'scanner') {
-    displayText = `Scanner: ${value}`;
-  } else if (type === 'echo') {
-    displayText = `Number of Echoes: ${value}`;
-  } else if (type === 'extra') {
-    const extraNames = {
-      'asl': 'ASL',
-      'complex': 'Complex',
-      'norf': 'NORF',
-      'physio': 'Physiological Monitoring',
-      'single-echo': 'Single-Echo'
-    };
-    displayText = `Extra Features: ${extraNames[value] || value}`;
-  } else if (type === 'derivative') {
-    displayText = `Derivatives: ${value === 'fmriprep' ? 'fMRIPrep' : 'AFNI'}`;
+  // Update filter tags
+  filterTags.innerHTML = '';
+  const extraNames = {
+    'asl': 'ASL',
+    'complex': 'Complex',
+    'norf': 'NORF',
+    'physio': 'Physiological Monitoring',
+    'single-echo': 'Single-Echo'
+  };
+
+  for (const filterKey in activeFilters) {
+    const { type, value } = activeFilters[filterKey];
+    let displayText = '';
+
+    if (type === 'scanner') {
+      displayText = `Scanner: ${value}`;
+    } else if (type === 'echo') {
+      displayText = `Echoes: ${value}`;
+    } else if (type === 'extra') {
+      displayText = `Extra: ${extraNames[value] || value}`;
+    } else if (type === 'derivative') {
+      displayText = `Derivative: ${value === 'fmriprep' ? 'fMRIPrep' : 'AFNI'}`;
+    }
+
+    const tag = document.createElement('span');
+    tag.className = 'filter-tag';
+    tag.innerHTML = `${displayText} <span class="remove" onclick="removeFilter('${filterKey}')">×</span>`;
+    filterTags.appendChild(tag);
   }
 
-  filterText.textContent = displayText;
   filterInfo.style.display = 'block';
 
   // Update count in heading
@@ -248,6 +322,18 @@ function filterTable(type, value) {
   if (heading) {
     heading.textContent = `Datasets (${visibleCount})`;
   }
+}
+
+function removeFilter(filterKey) {
+  const { type, value } = activeFilters[filterKey];
+  delete activeFilters[filterKey];
+
+  const link = document.querySelector(`th a[data-filter-type="${type}"][data-filter-value="${value}"]`);
+  if (link) {
+    link.classList.remove('active-filter');
+  }
+
+  applyFilters();
 }
 
 function clearFilter() {
@@ -263,7 +349,7 @@ function clearFilter() {
 
   // Hide filter info
   document.getElementById('filterInfo').style.display = 'none';
-  currentFilter = null;
+  activeFilters = {};
 
   // Reset count in heading
   const heading = document.querySelector('h2');
