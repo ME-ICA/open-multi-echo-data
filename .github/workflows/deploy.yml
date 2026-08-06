@@ -6,10 +6,12 @@ on:
       - ".github/workflows/deploy.yml"
       - "404.html"
       - "Gemfile"
+      - "Gemfile.lock"
       - "_config.yml"
       - "_layouts/**"
       - "_posts/**"
       - "about.md"
+      - "assets/**"
       - "index.html"
   push:
     branches:
@@ -18,10 +20,12 @@ on:
       - ".github/workflows/deploy.yml"
       - "404.html"
       - "Gemfile"
+      - "Gemfile.lock"
       - "_config.yml"
       - "_layouts/**"
       - "_posts/**"
       - "about.md"
+      - "assets/**"
       - "index.html"
   workflow_dispatch:
 

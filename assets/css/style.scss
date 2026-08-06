@@ -1,0 +1,28 @@
+---
+---
+
+@import "jekyll-theme-minimal";
+
+// pages-themes/minimal centres the page in an 860px wrapper and caps the
+// content column at 500px. The dataset table needs far more room than that, so
+// above the theme's 960px breakpoint let the wrapper fill the window and give
+// the content column everything the fixed sidebar isn't using.
+//
+// Below 960px the theme already unstacks the sidebar and lets everything run
+// full width, so those rules are left alone.
+
+$sidebar-width: 270px;
+$sidebar-gutter: 40px;
+
+@media screen and (min-width: 961px) {
+  .wrapper {
+    width: auto;
+    margin: 0;
+  }
+
+  section {
+    width: auto;
+    float: none;
+    margin-left: $sidebar-width + $sidebar-gutter;
+  }
+}
