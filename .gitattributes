@@ -1,0 +1,7 @@
+# Store every text file with LF in the repository, and check it out with LF on
+# every platform. Without this, editing on Windows rewrites files with CRLF and
+# they all show up as modified.
+* text=auto eol=lf
+
+# Shell scripts break outright if they get CRLF terminators.
+*.sh text eol=lf
