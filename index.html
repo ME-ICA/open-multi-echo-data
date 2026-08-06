@@ -1,0 +1,357 @@
+---
+layout: default
+title: Open Multi-Echo Datasets
+---
+<h1> {{ site.title }} </h1>
+
+This collects and describes every open multi-echo fMRI dataset that we know of.
+
+We define "open" as being freely available to the public without registration or a data use agreement.
+This excludes several datasets that are fundamentally open,
+but which have barriers to access that would prevent researchers from directly downloading the data.
+
+We define "multi-echo" as having more than two echoes in the BOLD time series.
+This excludes two-echo datasets, which, though technically "multi-echo", cannot be analyzed with multi-echo methods.
+
+<h2>Datasets ({{ site.categories.dataset.size }})</h2>
+
+{% assign echoes = "" | split: "" %}
+{% assign extras = "" | split: "" %}
+{% for post in site.categories.dataset %}
+  {% assign echoes = echoes | concat: post.echoes %}
+  {% assign extras = extras | concat: post.extras %}
+{% endfor %}
+{% assign echoes = echoes | uniq | sort %}
+{% assign extras = extras | uniq | sort %}
+
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  tr:hover {
+    background-color: #ddd;
+  }
+  th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+  }
+  th a {
+    color: #FFD700 !important;
+    text-decoration: underline !important;
+  }
+  th a {
+    color: #FFD700 !important;
+    text-decoration: underline !important;
+    cursor: pointer;
+  }
+  th a:hover {
+    color: #FFA500 !important;
+  }
+  th a.active-filter {
+    background-color: rgba(255, 215, 0, 0.3);
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+  .filter-info {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+  }
+  .filter-info button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .filter-info button:hover {
+    background-color: #45a049;
+  }
+  .filter-tag {
+    display: inline-block;
+    margin: 2px 5px;
+    padding: 3px 8px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  .filter-tag .remove {
+    margin-left: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .filter-tag .remove:hover {
+    opacity: 0.7;
+  }
+</style>
+
+<div class="filter-info" id="filterInfo" style="display: none;">
+  <span>Active filters: </span>
+  <span id="filterTags"></span>
+  <button onclick="clearFilter()">Show All</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="max-width: 300px;">Title</th>
+      <th>URL</th>
+      <th colspan=2>Scanner</th>
+      <th colspan="{{ echoes.size }}">Number of Echoes</th>
+      <th colspan="{{ extras.size }}">Extra Features</th>
+      <th colspan=2>Derivatives</th>
+    </tr>
+    <tr>
+      <th style="max-width: 300px;"></th>
+      <th></th>
+      <th><a href="#" onclick="filterTable('scanner', '7T'); return false;" data-filter-type="scanner" data-filter-value="7T">7T</a></th>
+      <th><a href="#" onclick="filterTable('scanner', '3T'); return false;" data-filter-type="scanner" data-filter-value="3T">3T</a></th>
+      {% for echo in echoes %}
+        <th><a href="#" onclick="filterTable('echo', '{{ echo }}'); return false;" data-filter-type="echo" data-filter-value="{{ echo }}">{{ echo }}</a></th>
+      {% endfor %}
+      {% for extra in extras %}
+        <th><a href="#" onclick="filterTable('extra', '{{ extra }}'); return false;" data-filter-type="extra" data-filter-value="{{ extra }}">{{ extra }}</a></th>
+      {% endfor %}
+      <th><a href="#" onclick="filterTable('derivative', 'fmriprep'); return false;" data-filter-type="derivative" data-filter-value="fmriprep">fMRIPrep</a></th>
+      <th><a href="#" onclick="filterTable('derivative', 'afni'); return false;" data-filter-type="derivative" data-filter-value="afni">AFNI</a></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for post in site.categories.dataset %}
+      <tr data-scanner="{{ post.scanner }}"
+          data-echoes="{{ post.echoes | join: ',' }}"
+          data-extras="{{ post.extras | join: ',' }}"
+          data-fmriprep="{% if post.fmriprep %}true{% else %}false{% endif %}"
+          data-afni="{% if post.afni %}true{% else %}false{% endif %}">
+        <td style="max-width: 300px;"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></td>
+        <td style="text-align: center;"><a href="{{ post.website }}">Dataset</a></td>
+        <td style="text-align: center;">
+          {% if post.scanner == "7T" %}
+            X
+          {% endif %}
+        </td>
+        <td style="text-align: center;">
+          {% if post.scanner == "3T" %}
+            X
+          {% endif %}
+        </td>
+        {% for echo in echoes %}
+          <td style="text-align: center;">
+            {% if post.echoes contains echo %}
+              X
+            {% endif %}
+          </td>
+        {% endfor %}
+        {% for extra in extras %}
+          <td style="text-align: center;">
+            {% if post.extras contains extra %}
+              X
+            {% endif %}
+          </td>
+        {% endfor %}
+        <td style="text-align: center;">
+          {% if post.fmriprep %}
+            X
+          {% endif %}
+        </td>
+        <td style="text-align: center;">
+          {% if post.afni %}
+            X
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+let activeFilters = {};
+
+function filterTable(type, value) {
+  const filterKey = `${type}:${value}`;
+
+  // If clicking the same filter, toggle it off
+  if (activeFilters[filterKey]) {
+    delete activeFilters[filterKey];
+    const clickedLink = document.querySelector(`th a[data-filter-type="${type}"][data-filter-value="${value}"]`);
+    if (clickedLink) {
+      clickedLink.classList.remove('active-filter');
+    }
+  } else {
+    // For mutually exclusive types, remove other filters of the same type
+    if (type === 'scanner') {
+      // Remove all other scanner filters
+      Object.keys(activeFilters).forEach(key => {
+        if (key.startsWith('scanner:')) {
+          const [oldType, oldValue] = key.split(':');
+          const oldLink = document.querySelector(`th a[data-filter-type="${oldType}"][data-filter-value="${oldValue}"]`);
+          if (oldLink) {
+            oldLink.classList.remove('active-filter');
+          }
+          delete activeFilters[key];
+        }
+      });
+    } else if (type === 'echo') {
+      // Remove all other echo filters
+      Object.keys(activeFilters).forEach(key => {
+        if (key.startsWith('echo:')) {
+          const [oldType, oldValue] = key.split(':');
+          const oldLink = document.querySelector(`th a[data-filter-type="${oldType}"][data-filter-value="${oldValue}"]`);
+          if (oldLink) {
+            oldLink.classList.remove('active-filter');
+          }
+          delete activeFilters[key];
+        }
+      });
+    }
+
+    // Add the new filter
+    activeFilters[filterKey] = { type, value };
+    const clickedLink = document.querySelector(`th a[data-filter-type="${type}"][data-filter-value="${value}"]`);
+    if (clickedLink) {
+      clickedLink.classList.add('active-filter');
+    }
+  }
+
+  // Apply all filters
+  applyFilters();
+}
+
+function applyFilters() {
+  const rows = document.querySelectorAll('tbody tr');
+  const filterInfo = document.getElementById('filterInfo');
+  const filterTags = document.getElementById('filterTags');
+
+  if (Object.keys(activeFilters).length === 0) {
+    clearFilter();
+    return;
+  }
+
+  let visibleCount = 0;
+  rows.forEach(row => {
+    let show = true;
+
+    // Check all active filters - all must match (AND logic)
+    for (const filterKey in activeFilters) {
+      const { type, value } = activeFilters[filterKey];
+      let matches = false;
+
+      if (type === 'scanner') {
+        matches = row.getAttribute('data-scanner') === value;
+      } else if (type === 'echo') {
+        const echoes = row.getAttribute('data-echoes').split(',');
+        matches = echoes.includes(value.toString());
+      } else if (type === 'extra') {
+        const extras = row.getAttribute('data-extras').split(',');
+        matches = extras.includes(value);
+      } else if (type === 'derivative') {
+        if (value === 'fmriprep') {
+          matches = row.getAttribute('data-fmriprep') === 'true';
+        } else if (value === 'afni') {
+          matches = row.getAttribute('data-afni') === 'true';
+        }
+      }
+
+      if (!matches) {
+        show = false;
+        break;
+      }
+    }
+
+    if (show) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  // Update filter tags
+  filterTags.innerHTML = '';
+  const extraNames = {
+    'asl': 'ASL',
+    'complex': 'Complex',
+    'norf': 'NORF',
+    'physio': 'Physiological Monitoring',
+    'single-echo': 'Single-Echo'
+  };
+
+  for (const filterKey in activeFilters) {
+    const { type, value } = activeFilters[filterKey];
+    let displayText = '';
+
+    if (type === 'scanner') {
+      displayText = `Scanner: ${value}`;
+    } else if (type === 'echo') {
+      displayText = `Echoes: ${value}`;
+    } else if (type === 'extra') {
+      displayText = `Extra: ${extraNames[value] || value}`;
+    } else if (type === 'derivative') {
+      displayText = `Derivative: ${value === 'fmriprep' ? 'fMRIPrep' : 'AFNI'}`;
+    }
+
+    const tag = document.createElement('span');
+    tag.className = 'filter-tag';
+    tag.innerHTML = `${displayText} <span class="remove" onclick="removeFilter('${filterKey}')">×</span>`;
+    filterTags.appendChild(tag);
+  }
+
+  filterInfo.style.display = 'block';
+
+  // Update count in heading
+  const heading = document.querySelector('h2');
+  if (heading) {
+    heading.textContent = `Datasets (${visibleCount})`;
+  }
+}
+
+function removeFilter(filterKey) {
+  const { type, value } = activeFilters[filterKey];
+  delete activeFilters[filterKey];
+
+  const link = document.querySelector(`th a[data-filter-type="${type}"][data-filter-value="${value}"]`);
+  if (link) {
+    link.classList.remove('active-filter');
+  }
+
+  applyFilters();
+}
+
+function clearFilter() {
+  const rows = document.querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    row.style.display = '';
+  });
+
+  // Remove active class from all filter links
+  document.querySelectorAll('th a').forEach(link => {
+    link.classList.remove('active-filter');
+  });
+
+  // Hide filter info
+  document.getElementById('filterInfo').style.display = 'none';
+  activeFilters = {};
+
+  // Reset count in heading
+  const heading = document.querySelector('h2');
+  if (heading) {
+    const totalCount = document.querySelectorAll('tbody tr').length;
+    heading.textContent = `Datasets (${totalCount})`;
+  }
+}
+</script>

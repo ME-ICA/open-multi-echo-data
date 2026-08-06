@@ -1,5 +1,6 @@
 _site/
-Gemfile*
+vendor/bundle/
+.bundle/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
