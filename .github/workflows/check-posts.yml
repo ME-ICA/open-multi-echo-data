@@ -1,0 +1,38 @@
+name: check posts
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/check_posts.py"
+      - ".github/workflows/check-posts.yml"
+      - "_posts/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/scripts/check_posts.py"
+      - ".github/workflows/check-posts.yml"
+      - "_posts/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install pyyaml
+
+      - name: Check post front matter
+        run: python .github/scripts/check_posts.py
