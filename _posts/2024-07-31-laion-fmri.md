@@ -5,12 +5,13 @@ categories: dataset
 website: https://laion-fmri.hebartlab.com/index.html
 scanner: 7T
 echoes: [3]
-extras: []
+extras: [complex]
 fmriprep:
 afni:
 ---
 
 Five participants. 25,052 launch-release images. 165 acquired 7T BOLD sessions with single-trial GLMsingle betas, retinotopy, localizers, and diffusion.
+And there's magnitude + phase fMRI.
 
 https://laion-fmri.hebartlab.com/mri_acquisition.html
 
